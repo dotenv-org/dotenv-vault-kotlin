@@ -12,4 +12,5 @@ class VaultTest {
         classUnderTest.printEntries()
         //assertTrue(classUnderTest.someLibraryMethod(), "someLibraryMethod should return 'true'")
     }
+
 }
