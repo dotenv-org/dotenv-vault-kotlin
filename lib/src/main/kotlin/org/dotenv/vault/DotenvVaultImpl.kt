@@ -4,8 +4,6 @@ import io.github.cdimascio.dotenv.Dotenv
 import io.github.cdimascio.dotenv.DotenvEntry
 
 class DotenvVaultImpl: Dotenv {
-
-
     override fun entries(): Set<DotenvEntry> {
         TODO("Not yet implemented")
     }

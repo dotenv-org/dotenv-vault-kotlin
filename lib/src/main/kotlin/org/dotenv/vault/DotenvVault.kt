@@ -11,6 +11,12 @@ class DotenvVault(private val dotenvDelegate: Dotenv) {
     private lateinit var vaultEntries: Map<String, String>
     private lateinit var vaultDotEnvEntries: List<DotenvEntry>
 
+    companion object {
+        fun getKeyPartFromKeyURI(findEnvironmentVaultKey: String): String {
+            val startIndex = findEnvironmentVaultKey.indexOf("key_") + 4
+            return findEnvironmentVaultKey.substring(startIndex, startIndex + 64)
+        }
+    }
 
     init {
         decryptVolt()
@@ -26,14 +32,12 @@ class DotenvVault(private val dotenvDelegate: Dotenv) {
     }
 
     fun decodeEncryptedEnvVaultContent(): String {
-        // QUESTION how to tell which of the environments to load if there's many present
+        // TODO QUESTION how to tell which of the environments to load if there's many present
         val devEntry = dotenvDelegate.entries().find { it.key == DEVELOPMENT_VAULT_KEY }
         devEntry?.let {
             val encryptedEnvContent = devEntry.value
             println("found development key in .env.vault: $encryptedEnvContent")
             return encryptedEnvContent
-
-
         }
         throw DotenvException("could not find encrypted vault")
     }
@@ -46,32 +50,29 @@ class DotenvVault(private val dotenvDelegate: Dotenv) {
         val dotenvVaultKey = decodeKeyFromUri(foundEnvironmentVaultKey)
 
         val secretKey = vaultCrypto.createKeyFromBytes(dotenvVaultKey)
-        val dotenvFileContent = vaultCrypto.decrypt(secretKey, Base64.getDecoder().decode(encryptedVaultContent))
+        val dotenvFileContent =
+            vaultCrypto.decrypt(secretKey, Base64.getDecoder().decode(encryptedVaultContent))
         val reader = DotenvParser(
             DotenvVaultReader(dotenvFileContent),
             true,
             true
         )
         val env = reader.parse()
-        // add decrypted variables to the dotenv entries
-        env.forEach {
-            //TODO comment this
-            println("vault item: ${it.key} = ${it.value}")
-        }
-        val envVarsMap = env.map { it.key to it.value }.toMap()
+        val envVarsMap = env.associate { it.key to it.value }
         vaultEntries = envVarsMap
         vaultDotEnvEntries = env
     }
 
+
     private fun decodeKeyFromUri(findEnvironmentVaultKey: String): ByteArray {
-        val keyPart = findEnvironmentVaultKey.substring(15, 15 + 64)
-        println("decoding key ${keyPart} from hex string")
+        val keyPart = getKeyPartFromKeyURI(findEnvironmentVaultKey)
+        println("decoding key $keyPart from hex string")
         return keyPart.fromHexString()
     }
 
     private fun findEnvironmentVaultKey(): String {
         dotenvDelegate.entries().forEach {
-            println("${it}")
+            println("$it")
         }
 
         val keyEntry = dotenvDelegate.entries().find { it.key == "DOTENV_KEY_DEVELOPMENT" }
@@ -109,7 +110,8 @@ class DotenvVault(private val dotenvDelegate: Dotenv) {
      * @param filter the filter e.g. [Dotenv.Filter]
      * @return the set of [DotenvEntry]s for environment variables matching the [Dotenv.Filter]
      */
-    fun entries(filter: Dotenv.Filter): Set<DotenvEntry> = vaultDotEnvEntries.toSet() + dotenvDelegate.entries(filter)
+    fun entries(filter: Dotenv.Filter): Set<DotenvEntry> =
+        vaultDotEnvEntries.toSet() + dotenvDelegate.entries(filter)
 
     /**
      * Retrieves the value of the environment variable specified by key
@@ -128,7 +130,6 @@ class DotenvVault(private val dotenvDelegate: Dotenv) {
     operator fun get(key: String, defaultValue: String): String =
         vaultEntries[key] ?: dotenvDelegate.get(key, defaultValue)
 }
-
 
 
 // TODO change this builder to return the same interface using DotenvVaultImpl, so it's not required to change the type

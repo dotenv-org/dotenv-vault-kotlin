@@ -36,7 +36,7 @@ class VaultTest {
     @Test
     fun testDecodeKeyUri() {
         val findEnvironmentVaultKey = "dotenv://:key_14968ef8b3f56cbcfcaa83197efa34dba567e715e82ee69e050258a5522100f6@dotenv.local/vault/.env.vault?environment=development"
-        val keyPart = findEnvironmentVaultKey.substring(14, 14 + 64)
+        val keyPart = DotenvVault.getKeyPartFromKeyURI(findEnvironmentVaultKey)
         println("key : ${keyPart}")
         assertEquals("14968ef8b3f56cbcfcaa83197efa34dba567e715e82ee69e050258a5522100f6", keyPart)
     }
