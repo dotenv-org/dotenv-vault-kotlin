@@ -13,11 +13,14 @@ plugins {
 
     // Apply the java-library plugin for API and implementation separation.
     `java-library`
+
+    `maven-publish`
 }
 
 repositories {
     // Use Maven Central for resolving dependencies.
     mavenCentral()
+    maven(url = "https://www.jitpack.io")
 }
 
 dependencies {
@@ -40,4 +43,18 @@ dependencies {
     api("org.apache.commons:commons-math3:3.6.1")
 
     implementation("io.github.cdimascio:dotenv-kotlin:6.4.1")
+
+//    implementation("com.github.marcel-rf:dotenv-vault-kotlin:0.0.1")
+}
+
+publishing {
+    publications {
+        create<MavenPublication>("maven") {
+            groupId = "org.dotenv.vault.kotlin"
+            artifactId = "dotenv-vault-kotlin"
+            version = "0.0.1"
+
+            from(components["java"])
+        }
+    }
 }
