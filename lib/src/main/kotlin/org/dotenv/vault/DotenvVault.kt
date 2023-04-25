@@ -10,7 +10,7 @@ class DotenvVault {
         Dotenv.load()
     }
 
-    fun someLibraryMethod2(): Boolean {
+    fun decrypt(): Boolean {
         return true
     }
 }
