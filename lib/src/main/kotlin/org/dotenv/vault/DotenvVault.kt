@@ -17,6 +17,9 @@ class DotenvVault(private val dotenvDelegate: Dotenv) {
     }
 
     fun printEntries() {
+        for (e in vaultEntries) {
+            println("${e.key} = ${e.value}")
+        }
         for (e in dotenvDelegate.entries()) {
             println("${e.key} = ${e.value}")
         }
@@ -28,12 +31,11 @@ class DotenvVault(private val dotenvDelegate: Dotenv) {
         devEntry?.let {
             val encryptedEnvContent = devEntry.value
             println("found development key in .env.vault: $encryptedEnvContent")
-            //TODO decrypt content and add all found variables to the entries set
             return encryptedEnvContent
 
 
         }
-        throw DotenvException("could get encrypted vault content")
+        throw DotenvException("could not find encrypted vault")
     }
 
     @Throws(DotenvException::class)
@@ -89,12 +91,7 @@ class DotenvVault(private val dotenvDelegate: Dotenv) {
             .filename(".env.keys")
 
         val delegate = dotenvKeys.load()
-        delegate.entries().forEach {
-            println("${it}")
-        }
-
         val keyEntry = delegate.entries().find { it.key == "DOTENV_KEY_DEVELOPMENT" }
-        println("found key entry ${keyEntry}")
         return keyEntry?.value ?: throw DotenvException("could not find environment key")
     }
 
@@ -133,6 +130,8 @@ class DotenvVault(private val dotenvDelegate: Dotenv) {
 }
 
 
+
+// TODO change this builder to return the same interface using DotenvVaultImpl, so it's not required to change the type
 fun dotenvVault(block: Configuration.() -> Unit = {}): DotenvVault {
     // TODO decrypt file and feed it to the dotenv tool
     // using public DotenvImpl(List<DotenvEntry> envVars) where envVars can be fed to the constructor
