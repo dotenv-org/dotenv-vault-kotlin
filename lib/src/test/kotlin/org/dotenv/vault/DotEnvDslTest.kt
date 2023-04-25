@@ -72,7 +72,7 @@ class DotEnvDslTest {
     @test
     fun resourceFilename() {
         val env = dotenv {
-            filename = "env"
+            filename = ".env"
             ignoreIfMalformed = true
         }
         assertEquals("my test ev 1", env["MY_TEST_EV1"])
