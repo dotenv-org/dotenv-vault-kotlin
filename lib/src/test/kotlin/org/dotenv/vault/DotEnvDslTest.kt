@@ -10,6 +10,9 @@ import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 import org.junit.Test as test
+
+private val testFilename = ".env_test"
+
 class DotEnvDslTest {
     private val envVars = mapOf(
         "MY_TEST_EV1" to "my test ev 1",
@@ -72,7 +75,7 @@ class DotEnvDslTest {
     @test
     fun resourceFilename() {
         val env = dotenv {
-            filename = ".env"
+            filename = testFilename
             ignoreIfMalformed = true
         }
         assertEquals("my test ev 1", env["MY_TEST_EV1"])
@@ -82,7 +85,7 @@ class DotEnvDslTest {
     @test
     fun iterateOverDotenv() {
         val env = dotenv {
-            filename = ".env"
+            filename = testFilename
             ignoreIfMalformed = true
         }
 
@@ -130,14 +133,14 @@ class DotEnvDslTest {
     @test(expected = DotenvException::class)
     fun dotenvMissing() {
         dotenv {
-            directory = "/missing/.env"
+            directory = "/missing/.env_test"
         }
     }
 
     @test
     fun dotenvIgnoreMissing() {
         val env = dotenv {
-            directory = "/missing/.env"
+            directory = "/missing/.env_test"
             ignoreIfMissing = true
         }
 
