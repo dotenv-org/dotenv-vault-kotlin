@@ -1,21 +1,20 @@
 package org.dotenv.vault
 
+import org.dotenv.vault.utilities.fromHexString
 import java.util.*
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class VaultCryptoTest {
-    val vaultCrypto = VaultCrypto()
-
     @Test
     fun verifyEncryptionDecryption() {
         val key = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
         val message = "HELLO"
 
-        val secretKey = vaultCrypto.createKeyFromBytes(key.fromHexString())
+        val secretKey = createKeyFromBytes(key.fromHexString())
 
-        val encryptedMessage = vaultCrypto.encrypt(secretKey, message)
-        val decryptedMessage = vaultCrypto.decrypt(secretKey, encryptedMessage)
+        val encryptedMessage = encrypt(secretKey, message)
+        val decryptedMessage = decrypt(secretKey, encryptedMessage)
 
         assertEquals(message, decryptedMessage)
     }
@@ -40,11 +39,11 @@ class VaultCryptoTest {
         val encryptedMessage =
             "BuEEZbR/YQKR2Rj/bHvOQbv+gtIxPoik1BCqpvIdqmv/lhLr5PAKs0r9iIZ4dBWNlQE7WdQ8vak00cQuEV5/tmRUkN1g/HFcRuJMN5slL+xuUzK5YJo1XYRwsdHvMG2BUGST"
 
-        val secretKey = vaultCrypto.createKeyFromBytes(key.fromHexString())
+        val secretKey = createKeyFromBytes(key.fromHexString())
         println("encryptedMessage ${encryptedMessage}")
 
         val decodedEncryptedMessage = Base64.getDecoder().decode(encryptedMessage)
-        val decryptedMessage = vaultCrypto.decrypt(secretKey, decodedEncryptedMessage)
+        val decryptedMessage = decrypt(secretKey, decodedEncryptedMessage)
         println("decryptedMessage ${decryptedMessage}")
         assertEquals(originalDotEnvContent, decryptedMessage)
     }

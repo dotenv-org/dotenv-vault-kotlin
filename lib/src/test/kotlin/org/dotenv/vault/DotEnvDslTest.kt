@@ -28,12 +28,15 @@ class DotEnvDslTest {
 
     @test(expected = DotenvException::class)
     fun dotenvMalformed() {
-        dotenv()
+        dotenv() {
+            filename = testFilename
+        }
     }
 
     @test
     fun dotenvQuotedEv() {
         val env = dotenv {
+            filename = testFilename
             ignoreIfMalformed = true
         }
 
@@ -49,6 +52,7 @@ class DotEnvDslTest {
     @test
     fun dotenvIgnoreMalformed() {
         val env = dotenv {
+            filename = testFilename
             ignoreIfMalformed = true
         }
 
@@ -99,6 +103,7 @@ class DotEnvDslTest {
     @org.junit.Test
     fun iteratorOverDotenvWithFilter() {
         val dotenv = Dotenv.configure()
+            .filename(testFilename)
             .ignoreIfMalformed()
             .load()
 
@@ -114,10 +119,11 @@ class DotEnvDslTest {
     @test
     fun multiLine() {
         val dotenv = Dotenv.configure()
+            .filename(testFilename)
             .ignoreIfMalformed()
             .load()
 
-        assertEquals(dotenv["MULTI_LINE"]!!, envVars["MULTI_LINE"]!!)
+        assertEquals(envVars["MULTI_LINE"], dotenv["MULTI_LINE"])
     }
 
     @test
