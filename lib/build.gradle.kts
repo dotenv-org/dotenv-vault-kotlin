@@ -42,9 +42,7 @@ dependencies {
     // This dependency is exported to consumers, that is to say found on their compile classpath.
     api("org.apache.commons:commons-math3:3.6.1")
 
-    implementation("io.github.cdimascio:dotenv-kotlin:6.4.1")
-
-//    implementation("com.github.marcel-rf:dotenv-vault-kotlin:0.0.1")
+    api("io.github.cdimascio:dotenv-kotlin:6.4.1")
 }
 
 publishing {

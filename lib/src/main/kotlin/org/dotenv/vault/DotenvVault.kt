@@ -6,7 +6,7 @@ import java.util.Base64
 
 private val DEVELOPMENT_VAULT_KEY = "DOTENV_VAULT_DEVELOPMENT"
 
-class DotenvVault(private val dotenvDelegate: Dotenv) {
+class DotenvVault(private val dotenvDelegate: Dotenv, private val key: String?) {
     private val vaultCrypto: VaultCrypto = VaultCrypto()
     private lateinit var vaultEntries: Map<String, String>
     private lateinit var vaultDotEnvEntries: List<DotenvEntry>
@@ -36,7 +36,7 @@ class DotenvVault(private val dotenvDelegate: Dotenv) {
         val devEntry = dotenvDelegate.entries().find { it.key == DEVELOPMENT_VAULT_KEY }
         devEntry?.let {
             val encryptedEnvContent = devEntry.value
-            println("found development key in .env.vault: $encryptedEnvContent")
+            println("found environment vault in .env.vault: $encryptedEnvContent")
             return encryptedEnvContent
         }
         throw DotenvException("could not find encrypted vault")
@@ -44,9 +44,9 @@ class DotenvVault(private val dotenvDelegate: Dotenv) {
 
     @Throws(DotenvException::class)
     fun decryptVolt() {
+
+        val foundEnvironmentVaultKey = key ?: findEnvironmentVaultKey()
         val encryptedVaultContent = decodeEncryptedEnvVaultContent()
-        val foundEnvironmentVaultKey = findEnvironmentVaultKey()
-        println("found vault key uri ${foundEnvironmentVaultKey}")
         val dotenvVaultKey = decodeKeyFromUri(foundEnvironmentVaultKey)
 
         val secretKey = vaultCrypto.createKeyFromBytes(dotenvVaultKey)
@@ -71,10 +71,6 @@ class DotenvVault(private val dotenvDelegate: Dotenv) {
     }
 
     private fun findEnvironmentVaultKey(): String {
-        dotenvDelegate.entries().forEach {
-            println("$it")
-        }
-
         val keyEntry = dotenvDelegate.entries().find { it.key == "DOTENV_KEY_DEVELOPMENT" }
         if (keyEntry?.value != null) {
             println("found key entry in current system env vars ${keyEntry.value}")
@@ -87,13 +83,18 @@ class DotenvVault(private val dotenvDelegate: Dotenv) {
     }
 
     private fun decodeEncryptedEnvVaultKeyFile(): String {
-        val dotenvKeys = Dotenv
-            .configure()
-            .filename(".env.keys")
+        try {
+            val dotenvKeys = Dotenv
+                .configure()
+                .filename(".env.keys")
 
-        val delegate = dotenvKeys.load()
-        val keyEntry = delegate.entries().find { it.key == "DOTENV_KEY_DEVELOPMENT" }
-        return keyEntry?.value ?: throw DotenvException("could not find environment key")
+            val delegate = dotenvKeys.load()
+            val keyEntry = delegate.entries().find { it.key == "DOTENV_KEY_DEVELOPMENT" }
+            return keyEntry?.value ?: throw DotenvException("could not find environment key")
+        } catch (e: DotenvException) {
+            throw DotenvException("could not find environment key")
+        }
+
     }
 
 
@@ -130,24 +131,42 @@ class DotenvVault(private val dotenvDelegate: Dotenv) {
     operator fun get(key: String, defaultValue: String): String =
         vaultEntries[key] ?: dotenvDelegate.get(key, defaultValue)
 }
-
+//
+//data class VaultConfiguration(
+//    val directory: String = "./",
+//    val filename: String = ".env.vault",
+//    val key: String?,
+//    /**
+//     * Do not throw an exception when .env is malformed
+//     */
+//    val ignoreIfMalformed: Boolean = false,
+//    /**
+//     * Do not throw an exception when .env is missing
+//     */
+//    val ignoreIfMissing: Boolean = false,
+//    /**
+//     * Set env vars into System properties. Enables fetch them via e.g. System.getProperty(...)
+//     */
+//    var systemProperties: Boolean = false,
+//)
 
 // TODO change this builder to return the same interface using DotenvVaultImpl, so it's not required to change the type
-fun dotenvVault(block: Configuration.() -> Unit = {}): DotenvVault {
+fun dotenvVault(key: String? = null, block: Configuration.() -> Unit = {}): DotenvVault {
     // TODO decrypt file and feed it to the dotenv tool
     // using public DotenvImpl(List<DotenvEntry> envVars) where envVars can be fed to the constructor
     // however the load method doesn't support it and the DotenvImpl is package private, so cannot be initialized from outside
     // go and check how the decryption works to see if it's feasible.
     val config = Configuration()
+    config.filename = ".env.vault"
     block(config)
     val dotenv = Dotenv
         .configure()
         .directory(config.directory)
-        .filename(".env.vault")
+        .filename(config.filename)
 
     if (config.ignoreIfMalformed) dotenv.ignoreIfMalformed()
     if (config.ignoreIfMissing) dotenv.ignoreIfMissing()
     if (config.systemProperties) dotenv.systemProperties()
     val delegate = dotenv.load()
-    return DotenvVault(delegate)
+    return DotenvVault(delegate, key)
 }
