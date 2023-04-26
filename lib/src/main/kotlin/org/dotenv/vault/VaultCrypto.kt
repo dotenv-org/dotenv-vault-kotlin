@@ -1,6 +1,8 @@
 package org.dotenv.vault
 
+import io.github.cdimascio.dotenv.DotenvException
 import java.nio.charset.Charset
+import javax.crypto.BadPaddingException
 import javax.crypto.Cipher
 import javax.crypto.SecretKey
 import javax.crypto.spec.GCMParameterSpec
@@ -18,6 +20,7 @@ fun encrypt(secretKey: SecretKey, message: String): ByteArray {
     return messageArray
 }
 
+@Throws(BadPaddingException::class)
 fun decrypt(secretKey: SecretKey, encryptedMessage: ByteArray): String {
     val AES_cipherInstance = Cipher.getInstance("AES/GCM/NoPadding")
     val params = GCMParameterSpec(128, encryptedMessage, 0, 12)

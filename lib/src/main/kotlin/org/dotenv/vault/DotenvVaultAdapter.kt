@@ -2,10 +2,14 @@ package org.dotenv.vault
 
 import io.github.cdimascio.dotenv.*
 import io.github.cdimascio.dotenv.internal.DotenvParser
+import org.dotenv.vault.utilities.decodeDotenvKeyFromUri
 import org.dotenv.vault.utilities.decodeKeyFromUri
-import java.util.Base64
+import java.util.*
+import javax.crypto.BadPaddingException
 
-private const val DEVELOPMENT_VAULT_KEY = "DOTENV_VAULT_DEVELOPMENT"
+//TODO figure out the environment that needs to be loaded from parsing the key
+private const val VAULT_KEY_PREFIX = "DOTENV_VAULT_"
+private const val dotenvKeyVar = "DOTENV_KEY"
 
 class DotenvVaultAdapter(private val unencryptedDotenv: Dotenv, private val key: String? = null): Dotenv {
     private lateinit var vaultEntries: Map<String, String>
@@ -15,26 +19,34 @@ class DotenvVaultAdapter(private val unencryptedDotenv: Dotenv, private val key:
         decryptVolt()
     }
 
-    fun decodeEncryptedEnvVaultContent(): String {
-        // TODO QUESTION how to tell which of the environments to load if there's many present
-        val devEntry = unencryptedDotenv.entries().find { it.key == DEVELOPMENT_VAULT_KEY }
+    fun getEnvironmentVaultKey(enviroment: String) = VAULT_KEY_PREFIX + enviroment.uppercase(Locale.getDefault())
+
+    fun decodeEncryptedEnvVaultContent(enviroment: String): String {
+        val environmentVaultKey = getEnvironmentVaultKey(enviroment)
+        val devEntry = unencryptedDotenv.entries().find { it.key == environmentVaultKey }
         devEntry?.let {
             val encryptedEnvContent = devEntry.value
-            println("found environment vault in .env.vault: $encryptedEnvContent")
+            println("using vault data in .env.vault for environment $enviroment = $encryptedEnvContent")
             return encryptedEnvContent
         }
-        throw DotenvException("could not find encrypted vault")
+        throw DotenvException("could not find encrypted vault for key ${environmentVaultKey}")
     }
 
     @Throws(DotenvException::class)
     fun decryptVolt() {
         val foundEnvironmentVaultKey = key ?: findEnvironmentVaultKey()
-        val encryptedVaultContent = decodeEncryptedEnvVaultContent()
-        val dotenvVaultKey = decodeKeyFromUri(foundEnvironmentVaultKey)
+        val dotenvVaultKey = decodeDotenvKeyFromUri(foundEnvironmentVaultKey)
 
-        val secretKey = createKeyFromBytes(dotenvVaultKey)
-        val dotenvFileContent =
+        val encryptedVaultContent = decodeEncryptedEnvVaultContent(dotenvVaultKey.environment)
+
+        val dotenvFileContent = try {
+            val secretKey = createKeyFromBytes(decodeKeyFromUri(dotenvVaultKey.decodeKey))
             decrypt(secretKey, Base64.getDecoder().decode(encryptedVaultContent))
+        } catch (e: BadPaddingException) {
+            throw DotenvException("unable to decrypt vault. verify that your ${dotenvKeyVar} environment variable is properly set")
+        }
+
+
         val reader = DotenvParser(
             DotenvVaultReader(dotenvFileContent),
             true,
@@ -48,14 +60,16 @@ class DotenvVaultAdapter(private val unencryptedDotenv: Dotenv, private val key:
     }
 
 
+
+
     private fun findEnvironmentVaultKey(): String {
-        val keyEntry = unencryptedDotenv.entries().find { it.key == "DOTENV_KEY_DEVELOPMENT" }
+        val keyEntry = unencryptedDotenv.entries().find { it.key == dotenvKeyVar }
         if (keyEntry?.value != null) {
             println("found key entry in current system env vars ${keyEntry.value}")
             return keyEntry.value
+        } else {
+            println("cannot find key entry $dotenvKeyVar in current system env vars")
         }
-
-        println("cannot find key entry in current system env vars")
         val decodedKeyEntryFromFile = decodeEncryptedEnvVaultKeyFile()
         return decodedKeyEntryFromFile
     }
@@ -65,12 +79,11 @@ class DotenvVaultAdapter(private val unencryptedDotenv: Dotenv, private val key:
             val dotenvKeys = Dotenv
                 .configure()
                 .filename(".env.keys")
-
             val delegate = dotenvKeys.load()
             val keyEntry = delegate.entries().find { it.key == "DOTENV_KEY_DEVELOPMENT" }
             return keyEntry?.value ?: throw DotenvException("could not find environment key")
         } catch (e: DotenvException) {
-            throw DotenvException("could not find environment key")
+            throw DotenvException("could not find environment key file")
         }
 
     }

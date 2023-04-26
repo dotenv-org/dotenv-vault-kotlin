@@ -12,10 +12,9 @@ class EnvFilesTest {
         val classUnderTest = dotenvVault()
         val decryptedValue = classUnderTest["MY_TEST_EV1"]
         assertEquals("my test ev 1", decryptedValue)
-        val devVaultContent = classUnderTest.entries().find { it.key == "DOTENV_VAULT_DEVELOPMENT"}
+        val devVaultContent = classUnderTest.entries().find { it.key == "DOTENV_VAULT_DEVELOPMENT" }
         assertNotNull(devVaultContent)
     }
-
 
     @Test
     fun loadVaultByDefaultUsingVaultFile() {
@@ -34,7 +33,7 @@ class EnvFilesTest {
         val decryptedValue = classUnderTest["MY_TEST_EV1"]
         assertEquals("my test ev 1", decryptedValue)
 
-        val devVaultContent = classUnderTest.entries().find { it.key == "DOTENV_VAULT_DEVELOPMENT"}
+        val devVaultContent = classUnderTest.entries().find { it.key == "DOTENV_VAULT_DEVELOPMENT" }
         assertNull(devVaultContent)
     }
 }
