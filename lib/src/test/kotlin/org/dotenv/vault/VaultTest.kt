@@ -48,10 +48,6 @@ class VaultTest {
         classUnderTest.printEntries()
         val decryptedValue = classUnderTest["MY_TEST_EV1"]
         assertEquals("my test ev 1", decryptedValue)
-
-//        val devVaultContent = classUnderTest.entries().find { it.key == "DOTENV_VAULT_DEVELOPMENT"}
-//        assertNotNull(devVaultContent)
-//        println("found encrypted vault ${devVaultContent.key} = ${devVaultContent.value}")
     }
 }
 

@@ -7,9 +7,8 @@ import org.dotenv.vault.utilities.decodeKeyFromUri
 import java.util.*
 import javax.crypto.BadPaddingException
 
-//TODO figure out the environment that needs to be loaded from parsing the key
 private const val VAULT_KEY_PREFIX = "DOTENV_VAULT_"
-private const val dotenvKeyVar = "DOTENV_KEY"
+private const val DOTENV_KEY_ID = "DOTENV_KEY"
 
 class DotenvVaultAdapter(private val unencryptedDotenv: Dotenv, private val key: String? = null): Dotenv {
     private lateinit var vaultEntries: Map<String, String>
@@ -19,14 +18,14 @@ class DotenvVaultAdapter(private val unencryptedDotenv: Dotenv, private val key:
         decryptVolt()
     }
 
-    fun getEnvironmentVaultKey(enviroment: String) = VAULT_KEY_PREFIX + enviroment.uppercase(Locale.getDefault())
+    private fun getEnvironmentVaultKey(enviroment: String) = VAULT_KEY_PREFIX + enviroment.uppercase(Locale.getDefault())
 
-    fun decodeEncryptedEnvVaultContent(enviroment: String): String {
+    private fun decodeEncryptedEnvVaultContent(enviroment: String): String {
         val environmentVaultKey = getEnvironmentVaultKey(enviroment)
         val devEntry = unencryptedDotenv.entries().find { it.key == environmentVaultKey }
         devEntry?.let {
             val encryptedEnvContent = devEntry.value
-            println("using vault data in .env.vault for environment $enviroment = $encryptedEnvContent")
+            println("using vault data in .env.vault for environment $enviroment = ${encryptedEnvContent.substring(0, 10)}...")
             return encryptedEnvContent
         }
         throw DotenvException("could not find encrypted vault for key ${environmentVaultKey}")
@@ -43,7 +42,7 @@ class DotenvVaultAdapter(private val unencryptedDotenv: Dotenv, private val key:
             val secretKey = createKeyFromBytes(decodeKeyFromUri(dotenvVaultKey.decodeKey))
             decrypt(secretKey, Base64.getDecoder().decode(encryptedVaultContent))
         } catch (e: BadPaddingException) {
-            throw DotenvException("unable to decrypt vault. verify that your ${dotenvKeyVar} environment variable is properly set")
+            throw DotenvException("unable to decrypt vault. verify that your ${DOTENV_KEY_ID} environment variable is properly set")
         }
 
 
@@ -63,12 +62,12 @@ class DotenvVaultAdapter(private val unencryptedDotenv: Dotenv, private val key:
 
 
     private fun findEnvironmentVaultKey(): String {
-        val keyEntry = unencryptedDotenv.entries().find { it.key == dotenvKeyVar }
+        val keyEntry = unencryptedDotenv.entries().find { it.key == DOTENV_KEY_ID }
         if (keyEntry?.value != null) {
-            println("found key entry in current system env vars ${keyEntry.value}")
+            println("found key entry in current system env vars")
             return keyEntry.value
         } else {
-            println("cannot find key entry $dotenvKeyVar in current system env vars")
+            println("cannot find key entry $DOTENV_KEY_ID in current system env vars")
         }
         val decodedKeyEntryFromFile = decodeEncryptedEnvVaultKeyFile()
         return decodedKeyEntryFromFile

@@ -36,8 +36,8 @@ class DotenvVaultImpl(val dotenv: DotenvVaultAdapter) : Dotenv {
 fun loadEncryptedVault(config: Configuration): Dotenv {
     val filename = ".env.vault"
     return if (config.filename == ".env") {
-        // when default filename is used (when it's ommited ) try to load .env.vault file
-        // TODO default value should be removed from the Configuration class and used when omitted
+        // when default filename is used (when it's omitted ) try to load .env.vault file
+        // TODO default value should be removed from the Configuration class and used when omitted, so that other implementations can provide their own defaults
         initializeDotenvForFile(filename, config.directory)
     } else {
         initializeDotenvForFile(config.filename, config.directory)
