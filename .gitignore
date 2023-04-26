@@ -5,3 +5,4 @@
 build
 /build/
 /local.properties
+/lib/src/test/resources/keys/.env.keys
