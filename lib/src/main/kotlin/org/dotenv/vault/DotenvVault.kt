@@ -5,7 +5,8 @@ import io.github.cdimascio.dotenv.Dotenv
 import io.github.cdimascio.dotenv.DotenvEntry
 import io.github.cdimascio.dotenv.DotenvException
 
-class DotenvVaultImpl(val dotenv: DotenvVaultAdapter) : Dotenv {
+class DotenvVault(val dotenv: DotenvVaultAdapter) : Dotenv {
+
     /**
      * Returns the set of environment variables with values
      * @return the set of [DotenvEntry]s for all environment variables
@@ -75,11 +76,9 @@ fun dotenvVault(key: String? = null, block: Configuration.() -> Unit = {}): Dote
     try {
         val loadedEnvFile = loadEncryptedVault(config)
         val vaultAdapter = DotenvVaultAdapter(loadedEnvFile, key)
-        return DotenvVaultImpl(vaultAdapter)
+        return DotenvVault(vaultAdapter)
     } catch (e: DotenvException) {
         println("unable to load encrypted vault file. falling back to .env file")
     }
     return loadUnencryptedEnvFile(block)
 }
-
-

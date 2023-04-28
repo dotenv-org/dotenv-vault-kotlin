@@ -4,7 +4,7 @@
 
 Extends the proven & trusted foundation of [dotenv-kotlin](https://github.com/cdimascio/dotenv-kotlin), with `.env.vault` file support.
 
-The extended standard lets you load encrypted secrets from your `.env.vault` file in production (and other) environments. Brought to you by the same people that pioneered [dotenv-nodejs](https://github.com/motdotla/dotenv).
+The extended standard lets you load encrypted secrets from your `.env.vault` file in production (and other) environments. 
 
 * [🌱 Install](#-install)
 * [🏗️ Usage (.env)](#%EF%B8%8F-usage)
