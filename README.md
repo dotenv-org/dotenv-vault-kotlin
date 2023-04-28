@@ -8,6 +8,13 @@ Extends the proven & trusted foundation of [dotenv-kotlin](https://github.com/cd
 
 ## Install
 
+Add jitpack repository
+```groovy
+repositories {
+	maven { url 'https://jitpack.io' }
+}
+```
+
 ### Maven
 ```xml
 <dependency>
