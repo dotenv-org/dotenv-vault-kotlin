@@ -28,7 +28,7 @@ class DotenvVaultAdapter(private val unencryptedDotenv: Dotenv, private val key:
             println("using vault data in .env.vault for environment $enviroment = ${encryptedEnvContent.substring(0, 10)}...")
             return encryptedEnvContent
         }
-        throw DotenvException("could not find encrypted vault for key ${environmentVaultKey}")
+        throw DotenvException("could not find encrypted vault for key $environmentVaultKey")
     }
 
     @Throws(DotenvException::class)
