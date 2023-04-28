@@ -1,4 +1,4 @@
-# dotenv-vault-kotlin [![Gem Version](https://badge.fury.io/rb/dotenv-vault.svg)](https://badge.fury.io/rb/dotenv-vault)
+# dotenv-vault-kotlin ![Release](https://jitpack.io/v/dotenv-org/dotenv-vault-kotlin.svg)
 
 <img src="https://raw.githubusercontent.com/motdotla/dotenv/master/dotenv.svg" alt="dotenv-vault" align="right" width="200" />
 
@@ -158,18 +158,10 @@ Yes. It is safe and recommended to do so. It contains your encrypted envs, and y
 
 No. It is the key that unlocks your encrypted environment variables. Be very careful who you share this key with. Do not let it leak.
 
-## Contributing
-
-1. Fork it
-2. Create your feature branch (`git checkout -b my-new-feature`)
-3. Commit your changes (`git commit -am 'Added some feature'`)
-4. Push to the branch (`git push origin my-new-feature`)
-5. Create new Pull Request
-
 ## Changelog
 
 See [CHANGELOG.md](CHANGELOG.md)
 
 ## License
 
-MIT
+Apache License 2.0
