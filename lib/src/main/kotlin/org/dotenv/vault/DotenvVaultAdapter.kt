@@ -7,10 +7,13 @@ import org.dotenv.vault.utilities.decodeKeyFromUri
 import java.util.*
 import javax.crypto.BadPaddingException
 
-private const val VAULT_KEY_PREFIX = "DOTENV_VAULT_"
-private const val DOTENV_KEY_ID = "DOTENV_KEY"
 
 class DotenvVaultAdapter(private val unencryptedDotenv: Dotenv, private val key: String? = null): Dotenv {
+    companion object {
+        private const val VAULT_KEY_PREFIX = "DOTENV_VAULT_"
+        private const val DOTENV_KEY_ID = "DOTENV_KEY"
+    }
+
     private lateinit var vaultEntries: Map<String, String>
     private lateinit var vaultDotEnvEntries: List<DotenvEntry>
 
