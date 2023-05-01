@@ -4,8 +4,52 @@ import io.github.cdimascio.dotenv.Configuration
 import io.github.cdimascio.dotenv.Dotenv
 import io.github.cdimascio.dotenv.DotenvEntry
 import io.github.cdimascio.dotenv.DotenvException
+import org.dotenv.vault.DotenvVault.Companion.loadVault
 
 class DotenvVault(val dotenv: DotenvVaultAdapter) : Dotenv {
+    companion object {
+        fun loadVault(key: String?, config: Configuration): Dotenv {
+            try {
+                val loadedEnvFile = loadEncryptedVault(config)
+                val vaultAdapter = DotenvVaultAdapter(loadedEnvFile, key)
+                return DotenvVault(vaultAdapter)
+            } catch (e: DotenvException) {
+                println("unable to load encrypted vault file. trying with .env file.")
+            }
+            return loadUnencryptedEnvFile(config)
+        }
+
+        private fun loadEncryptedVault(config: Configuration): Dotenv {
+            val filename = ".env.vault"
+            return if (config.filename == ".env") { // when default filename is used (when it's omitted ) try to load .env.vault file
+                initializeDotenvForFile(filename, config.directory)
+            } else {
+                initializeDotenvForFile(config.filename, config.directory)
+            }
+        }
+
+        private fun loadUnencryptedEnvFile(config: Configuration): Dotenv {
+            val dotenv = Dotenv
+                .configure()
+                .directory(config.directory)
+                .filename(config.filename)
+
+            if (config.ignoreIfMalformed) dotenv.ignoreIfMalformed()
+            if (config.ignoreIfMissing) dotenv.ignoreIfMissing()
+            if (config.systemProperties) dotenv.systemProperties()
+            return dotenv.load()
+        }
+
+
+        private fun initializeDotenvForFile(filename: String, directory: String): Dotenv {
+            val dotenv = Dotenv
+                .configure()
+                .directory(directory)
+                .filename(filename)
+            val delegate = dotenv.load()
+            return delegate
+        }
+    }
 
     /**
      * Returns the set of environment variables with values
@@ -32,53 +76,11 @@ class DotenvVault(val dotenv: DotenvVaultAdapter) : Dotenv {
      * @return the set of [DotenvEntry]s for environment variables matching the [Dotenv.Filter]
      */
     override fun entries(filter: Dotenv.Filter): Set<DotenvEntry> = dotenv.entries(filter)
+
 }
-
-fun loadEncryptedVault(config: Configuration): Dotenv {
-    val filename = ".env.vault"
-    return if (config.filename == ".env") {
-        // when default filename is used (when it's omitted ) try to load .env.vault file
-        // TODO default value should be removed from the Configuration class and used when omitted, so that other implementations can provide their own defaults
-        initializeDotenvForFile(filename, config.directory)
-    } else {
-        initializeDotenvForFile(config.filename, config.directory)
-    }
-}
-
-fun loadUnencryptedEnvFile(block: Configuration.() -> Unit = {}): Dotenv {
-    val config = Configuration()
-    block(config)
-    val dotenv = Dotenv
-        .configure()
-        .directory(config.directory)
-        .filename(config.filename)
-
-    if (config.ignoreIfMalformed) dotenv.ignoreIfMalformed()
-    if (config.ignoreIfMissing) dotenv.ignoreIfMissing()
-    if (config.systemProperties) dotenv.systemProperties()
-    return dotenv.load()
-}
-
-
-fun initializeDotenvForFile(filename: String, directory: String): Dotenv {
-    val dotenv = Dotenv
-        .configure()
-        .directory(directory)
-        .filename(filename)
-    val delegate = dotenv.load()
-    return delegate
-}
-
 
 fun dotenvVault(key: String? = null, block: Configuration.() -> Unit = {}): Dotenv {
     val config = Configuration()
     block(config)
-    try {
-        val loadedEnvFile = loadEncryptedVault(config)
-        val vaultAdapter = DotenvVaultAdapter(loadedEnvFile, key)
-        return DotenvVault(vaultAdapter)
-    } catch (e: DotenvException) {
-        println("unable to load encrypted vault file. falling back to .env file")
-    }
-    return loadUnencryptedEnvFile(block)
+    return loadVault(key, config)
 }

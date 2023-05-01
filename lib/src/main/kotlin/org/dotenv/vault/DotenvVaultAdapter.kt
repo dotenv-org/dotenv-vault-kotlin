@@ -58,10 +58,9 @@ class DotenvVaultAdapter(private val unencryptedDotenv: Dotenv, private val key:
         vaultDotEnvEntries = env + unencryptedDotenv.entries()
     }
 
-    private fun findEnvironmentVaultKey(): String {
+    fun findEnvironmentVaultKey(): String {
         val keyEntry = unencryptedDotenv.entries().find { it.key == DOTENV_KEY_ID }
         if (keyEntry?.value != null) {
-            println("found key entry in current system env vars")
             return keyEntry.value
         } else {
             throw DotenvException("cannot find key entry $DOTENV_KEY_ID in current system env vars")

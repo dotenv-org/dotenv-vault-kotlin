@@ -9,7 +9,7 @@ class MultipleEnvironmentsTest {
 
     @Test
     fun loadVaultForProductionEnvironmentLoadsProdValuesForVariable() {
-        val classUnderTest = dotenvVault() {
+        val classUnderTest = dotenvVault(key = "dotenv://:key_781d8ba55cdd0c1b88137cf531194c170b7a61f62e669fb52c153dafbdff2c24@dotenv.local/vault/.env.vault?environment=production") {
             directory = "multiEnvironments"
         }
         val decryptedValue = classUnderTest["MY_TEST_EV1"]

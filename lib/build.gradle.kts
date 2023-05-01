@@ -23,6 +23,9 @@ dependencies {
 
     // Use the Kotlin JUnit integration.
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit")
+
+    // Use mockito for tests
+    testImplementation("org.mockito.kotlin:mockito-kotlin:4.1.0")
 }
 
 publishing {
