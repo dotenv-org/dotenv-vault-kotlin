@@ -33,7 +33,7 @@ publishing {
         create<MavenPublication>("maven") {
             groupId = "org.dotenv.vault.kotlin"
             artifactId = "dotenv-vault-kotlin"
-            version = "0.0.1"
+            version = "0.0.2"
             from(components["java"])
         }
     }
