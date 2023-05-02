@@ -1,4 +1,4 @@
-# dotenv-vault-kotlin ![Release](https://jitpack.io/v/dotenv-org/dotenv-vault-kotlin.svg)
+# dotenv-vault-kotlin ![Release](https://jitpack.io/v/dotenv-org/dotenv-vault-kotlin.svg) ![](https://img.shields.io/badge/license-Apache%202.0-orange.svg)
 
 <img src="https://raw.githubusercontent.com/motdotla/dotenv/master/dotenv.svg" alt="dotenv-vault" align="right" width="200" />
 
@@ -143,7 +143,7 @@ android {
 
 #### What happens if `DOTENV_KEY` is not set?
 
-Dotenv Vault gracefully falls back to [dotenv](https://github.com/bkeepers/dotenv) when `DOTENV_KEY` is not set. This is the default for development so that you can focus on editing your `.env` file and save the `build` command until you are ready to deploy those environment variables changes.
+Dotenv Vault gracefully falls back to [dotenv-kotlin](https://github.com/cdimascio/dotenv-kotlin) when `DOTENV_KEY` is not set. This is the default for development so that you can focus on editing your `.env` file and save the `build` command until you are ready to deploy those environment variables changes.
 
 #### Should I commit my `.env` file?
 
