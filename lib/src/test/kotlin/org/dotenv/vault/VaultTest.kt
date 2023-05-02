@@ -1,25 +1,28 @@
 package org.dotenv.vault
 
+import io.github.cdimascio.dotenv.Dotenv
 import org.dotenv.vault.utilities.printEntries
 import kotlin.test.Test
+import kotlin.test.assertContains
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 
 class VaultTest {
 
     @Test
-    fun loadEncryptedDevelopmentVault() {
+    fun loadEncryptedDevelopmentVaultEntries() {
         val classUnderTest = dotenvVault() {
-            ignoreIfMalformed = true
-            systemProperties = false
         }
-        val devVaultContent = classUnderTest.entries().find { it.key == "DOTENV_VAULT_DEVELOPMENT"}
-        assertNotNull(devVaultContent)
-        println("found encrypted vault ${devVaultContent.key} = ${devVaultContent.value}")
-
-        classUnderTest.printEntries()
-        val decryptedValue = classUnderTest["MY_TEST_EV1"]
+        val decryptedValue = classUnderTest.get("MY_TEST_EV1", "")
         assertEquals("my test ev 1", decryptedValue)
+
+        val decryptedNotExisting = classUnderTest.get("NOT_EXISTENT_KEY", "")
+        assertEquals("", decryptedNotExisting)
+
+        val declaredInFile = classUnderTest.entries(Dotenv.Filter.DECLARED_IN_ENV_FILE)
+        assertNotNull(declaredInFile)
+        val itemFound = declaredInFile.find { it.key == "MY_TEST_EV1" }
+        assertNotNull(itemFound)
     }
 
     @Test

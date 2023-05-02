@@ -7,10 +7,13 @@ import org.dotenv.vault.utilities.decodeKeyFromUri
 import java.util.*
 import javax.crypto.BadPaddingException
 
-private const val VAULT_KEY_PREFIX = "DOTENV_VAULT_"
-private const val DOTENV_KEY_ID = "DOTENV_KEY"
 
 class DotenvVaultAdapter(private val unencryptedDotenv: Dotenv, private val key: String? = null): Dotenv {
+    companion object {
+        private const val VAULT_KEY_PREFIX = "DOTENV_VAULT_"
+        private const val DOTENV_KEY_ID = "DOTENV_KEY"
+    }
+
     private lateinit var vaultEntries: Map<String, String>
     private lateinit var vaultDotEnvEntries: List<DotenvEntry>
 
@@ -58,34 +61,15 @@ class DotenvVaultAdapter(private val unencryptedDotenv: Dotenv, private val key:
         vaultDotEnvEntries = env + unencryptedDotenv.entries()
     }
 
-
-
-
-    private fun findEnvironmentVaultKey(): String {
+    fun findEnvironmentVaultKey(): String {
         val keyEntry = unencryptedDotenv.entries().find { it.key == DOTENV_KEY_ID }
         if (keyEntry?.value != null) {
-            println("found key entry in current system env vars")
             return keyEntry.value
         } else {
-            println("cannot find key entry $DOTENV_KEY_ID in current system env vars")
+            throw DotenvException("cannot find key entry $DOTENV_KEY_ID in current system env vars")
         }
-        val decodedKeyEntryFromFile = decodeEncryptedEnvVaultKeyFile()
-        return decodedKeyEntryFromFile
     }
 
-    private fun decodeEncryptedEnvVaultKeyFile(): String {
-        try {
-            val dotenvKeys = Dotenv
-                .configure()
-                .filename(".env.keys")
-            val delegate = dotenvKeys.load()
-            val keyEntry = delegate.entries().find { it.key == "DOTENV_KEY_DEVELOPMENT" }
-            return keyEntry?.value ?: throw DotenvException("could not find environment key")
-        } catch (e: DotenvException) {
-            throw DotenvException("could not find environment key file")
-        }
-
-    }
     /**
      * Returns the set of environment variables with values
      * @return the set of [DotenvEntry]s for all environment variables

@@ -10,12 +10,16 @@ data class DotenvKey(
 )
 
 fun decodeDotenvKeyFromUri(environmentVaultKey: String): DotenvKey {
-    val uri = URI(environmentVaultKey)
-    val environmentValue = uri.findParameterValue("environment")
-        ?: throw DotenvException("unable to determine environment from key uri")
+    try {
+        val uri = URI(environmentVaultKey)
+        val environmentValue = uri.findParameterValue("environment")
+            ?: throw DotenvException("unable to determine environment from key uri")
 
-    val password = uri.findPasswordValue() ?: throw DotenvException("unable to find environment key from uri ${environmentVaultKey}")
-    return DotenvKey(environmentValue, password.removePrefix("key_"))
+        val password = uri.findPasswordValue() ?: throw DotenvException("unable to find key in userinfo")
+        return DotenvKey(environmentValue, password.removePrefix("key_"))
+    } catch (e: Exception) {
+        throw DotenvException("unable to find key in uri: ${environmentVaultKey}")
+    }
 }
 
 
@@ -23,7 +27,7 @@ fun decodeKeyFromUri(environmentVaultKey: String): ByteArray {
     return environmentVaultKey.fromHexString()
 }
 
-fun URI.findPasswordValue(): String? = userInfo.split(":").last()
+fun URI.findPasswordValue(): String? = if (userInfo.isEmpty()) null else userInfo.split(":").last()
 
 fun URI.findParameterValue(parameterName: String): String? {
     return rawQuery.split('&').map {

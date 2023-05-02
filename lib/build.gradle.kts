@@ -23,6 +23,9 @@ dependencies {
 
     // Use the Kotlin JUnit integration.
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit")
+
+    // Use mockito for tests
+    testImplementation("org.mockito.kotlin:mockito-kotlin:4.1.0")
 }
 
 publishing {
@@ -30,7 +33,7 @@ publishing {
         create<MavenPublication>("maven") {
             groupId = "org.dotenv.vault.kotlin"
             artifactId = "dotenv-vault-kotlin"
-            version = "0.0.1"
+            version = "0.0.2"
             from(components["java"])
         }
     }

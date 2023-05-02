@@ -2,7 +2,6 @@ package org.dotenv.vault
 
 import io.github.cdimascio.dotenv.Dotenv
 import io.github.cdimascio.dotenv.DotenvException
-import io.github.cdimascio.dotenv.dotenv
 import java.util.*
 import kotlin.test.assertEquals
 import kotlin.test.assertNotEquals
@@ -28,14 +27,14 @@ class DotEnvDslTest {
 
     @test(expected = DotenvException::class)
     fun dotenvMalformed() {
-        dotenv() {
+        dotenvVault() {
             filename = testFilename
         }
     }
 
     @test
     fun dotenvQuotedEv() {
-        val env = dotenv {
+        val env = dotenvVault {
             filename = testFilename
             ignoreIfMalformed = true
         }
@@ -51,7 +50,7 @@ class DotEnvDslTest {
 
     @test
     fun dotenvIgnoreMalformed() {
-        val env = dotenv {
+        val env = dotenvVault {
             filename = testFilename
             ignoreIfMalformed = true
         }
@@ -67,7 +66,7 @@ class DotEnvDslTest {
 
     @test
     fun resourceRelative() {
-        val env = dotenv {
+        val env = dotenvVault {
             directory = "./"
             ignoreIfMalformed = true
         }
@@ -78,7 +77,7 @@ class DotEnvDslTest {
 
     @test
     fun resourceFilename() {
-        val env = dotenv {
+        val env = dotenvVault {
             filename = testFilename
             ignoreIfMalformed = true
         }
@@ -88,7 +87,7 @@ class DotEnvDslTest {
 
     @test
     fun iterateOverDotenv() {
-        val env = dotenv {
+        val env = dotenvVault {
             filename = testFilename
             ignoreIfMalformed = true
         }
@@ -128,7 +127,7 @@ class DotEnvDslTest {
 
     @test
     fun resourceCurrent() {
-        val env = dotenv {
+        val env = dotenvVault {
             ignoreIfMalformed = true
         }
         assertEquals("my test ev 1", env["MY_TEST_EV1"])
@@ -138,14 +137,14 @@ class DotEnvDslTest {
 
     @test(expected = DotenvException::class)
     fun dotenvMissing() {
-        dotenv {
+        dotenvVault {
             directory = "/missing/.env_test"
         }
     }
 
     @test
     fun dotenvIgnoreMissing() {
-        val env = dotenv {
+        val env = dotenvVault {
             directory = "/missing/.env_test"
             ignoreIfMissing = true
         }
