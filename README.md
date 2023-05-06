@@ -16,8 +16,6 @@ The extended standard lets you load encrypted secrets from your `.env.vault` fil
 
 ## 🌱 Install
 
-### Add repository
-
 Add jitpack repository to your `build.gradle` or `builde.gradle.kts` and require the `com.github.dotenv-org:dotenv-vault-kotlin:x.x.x` implementation dependency.
 
 ```groovy
@@ -53,17 +51,27 @@ dependencies {
 ## 🏗️ Usage
 
 Development usage works just like [dotenv-kotlin](https://github.com/cdimascio/dotenv-kotlin). 
-So if you don't add your `.env.vault` file or set the `DOTENV_KEY` the library will fallback to reading your `.env` file.
+
+Add your application configuration to your `.env` file in the root of your project:
+
+```
+S3_BUCKET=YOURS3BUCKET
+SECRET_KEY=YOURSECRETKEYGOESHERE
+```
+
+As early as possible in your application code, load .env:
 
 #### Kotlin
+
 ```kotlin
 import org.dotenv.vault.dotenvVault
 
 val dotenv = dotenvVault()
-dotenv["MY_ENV_VAR1"]
+dotenv["S3_BUCKET"]
 ```
 
 #### Android
+
 - Create an assets folder in `app/src/main/assets`
 - Add `env.vault` *(no dot)* to the assets folder
 
@@ -75,7 +83,7 @@ dotenv["MY_ENV_VAR1"]
       directory = "/assets"
       filename = "env.vault" // instead of '.env', use 'env'
   }
-  dotenv["MY_ENV_VAR1"]
+  dotenv["S3_BUCKET"]
   ```
 
 **Note:** The above configuration is required because dot files in `/assets` do not appear to resolve on Android. *(Seeking recommendations from the Android community on how `dotenv-kotlin` configuration should work in order to provide the best experience for Android developers)*
