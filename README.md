@@ -112,43 +112,76 @@ android {
 
 ## 🚀 Deploying
 
-Encrypt your environment settings by doing:
+Install dotenv-vault. See [installation instructions](https://www.dotenv.org/install).
+
+Then encrypt your environment variables by doing:
 
 ```shell
-npx dotenv-vault local build
+dotenv-vault local build
 ```
 
 This will create an encrypted `.env.vault` file along with a `.env.keys` file containing the encryption keys
-Set the `DOTENV_KEY` environment variable by copying and pasting the key value from the `.env.keys` file onto your server or cloud provider environment variables.
+Set the `DOTENV_KEY` environment variable by copying and pasting the key value from the `.env.keys` file onto your server or cloud provider. For example in heroku:
+
+```
+heroku config:set DOTENV_KEY=<key string from .env.keys>
+```
 
 Commit your .env.vault file safely to code and deploy. Your .env.vault fill be decrypted on boot, its environment variables injected, and your app work as expected.
 
-Note that when the `DOTENV_KEY` environment variable is set, environment settings will *always* be loaded from the `.env.vault` file. 
-For development use, you can leave the `DOTENV_KEY` environment variable unset and fall back on the `dotenv-kotlin` behaviour of loading from `.env` (see [here in the `dotenv` README](https://github.com/cdimascio/dotenv-kotlin#usage) for the details).
-
 ## 🌴 Manage Multiple Environments
 
-You have two options for managing multiple environments - locally managed or vault managed - both use [dotenv-vault](https://github.com/dotenv-org/dotenv-vault).
+You have two options for managing multiple environments - locally managed or vault managed - both use <a href="https://github.com/dotenv-org/dotenv-vault">dotenv-vault</a>.
+
+Locally managed never makes a remote API call. It is completely managed on your machine. Vault managed adds conveniences like backing up your .env file, secure sharing across your team, access permissions, and version history. Choose what works best for you.
+
+#### 💻 Locally Managed
 
 Create a `.env.production` file in the root of your project and put your production values there.
 
-```shell
+```
 # .env.production
-MY_ENV_VAR1="some_prod_value"
-MY_EVV_VAR2="some_other_prod_value"
+S3_BUCKET="PRODUCTION_S3BUCKET"
+SECRET_KEY="PRODUCTION_SECRETKEYGOESHERE"
 ```
 
 Rebuild your `.env.vault` file.
 
-```shell
-npx dotenv-vault local build
+```bash
+$ dotenv-vault local build
 ```
 
-View your `.env.keys` file. There is a production `DOTENV_KEY` that pairs with the `DOTENV_VAULT_PRODUCTION` cipher in your `.env.vault` file.
+Check your `.env.keys` file. There is a production `DOTENV_KEY` that coincides with the additional `DOTENV_VAULT_PRODUCTION` cipher in your `.env.vault` file.
 
-Set the production `DOTENV_KEY` enviorment variable with the value of your selected environment, recommit your `.env.vault` file to code, and deploy. That's it!
+Set the production `DOTENV_KEY` on your server, recommit your `.env.vault` file to code, and deploy. That's it!
 
-Your .env.vault fill be decrypted on boot, its production environment variables injected, and your app work as expected.
+#### 🔐 Vault Managed
+
+Sync your .env file. Run the push command and follow the instructions. [learn more](/docs/sync/quickstart)
+
+```bash
+$ dotenv-vault push
+```
+
+Manage multiple environments with the included UI. [learn more](/docs/tutorials/environments)
+
+```bash
+$ dotenv-vault open
+```
+
+Build your `.env.vault` file with multiple environments.
+
+```bash
+$ dotenv-vault build
+```
+
+Access your `DOTENV_KEY`.
+
+```bash
+$ dotenv-vault keys
+```
+
+Set the production `DOTENV_KEY` on your server, recommit your `.env.vault` file to code, and deploy. That's it!
 
 ## 📚 Examples
 
