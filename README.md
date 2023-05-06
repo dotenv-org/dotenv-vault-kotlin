@@ -124,7 +124,8 @@ Then encrypt your environment variables by doing:
 dotenv-vault local build
 ```
 
-This will create an encrypted `.env.vault` file along with a `.env.keys` file containing the encryption keys
+This will create an encrypted `.env.vault` file along with a `.env.keys` file containing the encryption keys.
+
 Set the `DOTENV_KEY` environment variable by copying and pasting the key value from the `.env.keys` file onto your server or cloud provider. For example in heroku:
 
 ```
