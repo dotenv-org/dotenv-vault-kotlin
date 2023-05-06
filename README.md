@@ -16,7 +16,7 @@ The extended standard lets you load encrypted secrets from your `.env.vault` fil
 
 ## 🌱 Install
 
-Add jitpack repository to your `build.gradle` or `builde.gradle.kts` and require the `com.github.dotenv-org:dotenv-vault-kotlin:x.x.x` implementation dependency.
+Add jitpack repository to your `build.gradle` or `build.gradle.kts` and require the `com.github.dotenv-org:dotenv-vault-kotlin:x.x.x` implementation dependency.
 
 ```groovy
 // build.gradle
