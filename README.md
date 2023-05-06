@@ -18,14 +18,19 @@ The extended standard lets you load encrypted secrets from your `.env.vault` fil
 
 ### Add repository
 
-Add jitpack repository to your `build.gradle` or `builde.gradle.kts`.
+Add jitpack repository to your `build.gradle` or `builde.gradle.kts` and require the `com.github.dotenv-org:dotenv-vault-kotlin:x.x.x` implementation dependency.
 
 ```groovy
 // build.gradle
 ...
 repositories {
     ...
-	maven { url 'https://jitpack.io' }
+    maven { url 'https://jitpack.io' }
+}
+
+dependencies {
+    ...
+    implementation 'com.github.dotenv-org:dotenv-vault-kotlin:0.0.2'
 }
 ```
 
@@ -33,67 +38,17 @@ or
 
 ```kotlin
 // build.gradle.kts
+...
 repositories {
     ...
     maven { url = uri("https://jitpack.io") }
 }
+
+dependencies {
+    ...
+    implementation("com.github.dotenv-org:dotenv-vault-kotlin:0.0.2")
+}
 ```
-
-### Add dependency
-#### Gradle Groovy DSL
-```groovy
-implementation 'com.github.dotenv-org:dotenv-vault-kotlin:0.0.2'
-
-```
-
-#### Gradle Kotlin DSL
-```kotlin
-
-implementation("com.github.dotenv-org:dotenv-vault-kotlin:0.0.2")
-
-```
-
-
-
-## 🚀 Encrypting your .env files
-
-Encrypt your environment settings by doing:
-
-```shell
-npx dotenv-vault local build
-```
-
-This will create an encrypted `.env.vault` file along with a `.env.keys` file containing the encryption keys
-Set the `DOTENV_KEY` environment variable by copying and pasting the key value from the `.env.keys` file onto your server or cloud provider environment variables.
-
-Commit your .env.vault file safely to code and deploy. Your .env.vault fill be decrypted on boot, its environment variables injected, and your app work as expected.
-
-Note that when the `DOTENV_KEY` environment variable is set, environment settings will *always* be loaded from the `.env.vault` file. 
-For development use, you can leave the `DOTENV_KEY` environment variable unset and fall back on the `dotenv-kotlin` behaviour of loading from `.env` (see [here in the `dotenv` README](https://github.com/cdimascio/dotenv-kotlin#usage) for the details).
-
-## 🌴 Manage Multiple Environments
-
-You have two options for managing multiple environments - locally managed or vault managed - both use [dotenv-vault](https://github.com/dotenv-org/dotenv-vault).
-
-Create a `.env.production` file in the root of your project and put your production values there.
-
-```shell
-# .env.production
-MY_ENV_VAR1="some_prod_value"
-MY_EVV_VAR2="some_other_prod_value"
-```
-
-Rebuild your `.env.vault` file.
-
-```shell
-npx dotenv-vault local build
-```
-
-View your `.env.keys` file. There is a production `DOTENV_KEY` that pairs with the `DOTENV_VAULT_PRODUCTION` cipher in your `.env.vault` file.
-
-Set the production `DOTENV_KEY` enviorment variable with the value of your selected environment, recommit your `.env.vault` file to code, and deploy. That's it!
-
-Your .env.vault fill be decrypted on boot, its production environment variables injected, and your app work as expected.
 
 ## 🏗️ Usage
 
@@ -146,6 +101,46 @@ android {
 }
 
 ```
+
+## 🚀 Deploying
+
+Encrypt your environment settings by doing:
+
+```shell
+npx dotenv-vault local build
+```
+
+This will create an encrypted `.env.vault` file along with a `.env.keys` file containing the encryption keys
+Set the `DOTENV_KEY` environment variable by copying and pasting the key value from the `.env.keys` file onto your server or cloud provider environment variables.
+
+Commit your .env.vault file safely to code and deploy. Your .env.vault fill be decrypted on boot, its environment variables injected, and your app work as expected.
+
+Note that when the `DOTENV_KEY` environment variable is set, environment settings will *always* be loaded from the `.env.vault` file. 
+For development use, you can leave the `DOTENV_KEY` environment variable unset and fall back on the `dotenv-kotlin` behaviour of loading from `.env` (see [here in the `dotenv` README](https://github.com/cdimascio/dotenv-kotlin#usage) for the details).
+
+## 🌴 Manage Multiple Environments
+
+You have two options for managing multiple environments - locally managed or vault managed - both use [dotenv-vault](https://github.com/dotenv-org/dotenv-vault).
+
+Create a `.env.production` file in the root of your project and put your production values there.
+
+```shell
+# .env.production
+MY_ENV_VAR1="some_prod_value"
+MY_EVV_VAR2="some_other_prod_value"
+```
+
+Rebuild your `.env.vault` file.
+
+```shell
+npx dotenv-vault local build
+```
+
+View your `.env.keys` file. There is a production `DOTENV_KEY` that pairs with the `DOTENV_VAULT_PRODUCTION` cipher in your `.env.vault` file.
+
+Set the production `DOTENV_KEY` enviorment variable with the value of your selected environment, recommit your `.env.vault` file to code, and deploy. That's it!
+
+Your .env.vault fill be decrypted on boot, its production environment variables injected, and your app work as expected.
 
 ## 🚀 Examples
 * [Android example app](https://github.com/marcel-rf/DotenvVaultAndroidExample)
