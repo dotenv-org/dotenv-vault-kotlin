@@ -18,11 +18,24 @@ The extended standard lets you load encrypted secrets from your `.env.vault` fil
 
 ### Add repository
 
-Add jitpack repository
+Add jitpack repository to your `build.gradle` or `builde.gradle.kts`.
 
 ```groovy
+// build.gradle
+...
 repositories {
+    ...
 	maven { url 'https://jitpack.io' }
+}
+```
+
+or
+
+```kotlin
+// build.gradle.kts
+repositories {
+    ...
+    maven { url = uri("https://jitpack.io") }
 }
 ```
 
