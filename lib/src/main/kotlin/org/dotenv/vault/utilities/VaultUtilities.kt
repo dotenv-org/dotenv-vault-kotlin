@@ -16,6 +16,7 @@ fun decodeDotenvKeyFromUri(environmentVaultKey: String): DotenvKey {
             ?: throw DotenvException("unable to determine environment from key uri")
 
         val password = uri.findPasswordValue() ?: throw DotenvException("unable to find key in userinfo")
+        // fix: this won't always start with key_. It could start with custom_, or local_, etc. Instead get the last 64 characters. see golang example: https://github.com/dotenv-org/godotenvvault/blob/master/godotenvvault.go#L301
         return DotenvKey(environmentValue, password.removePrefix("key_"))
     } catch (e: Exception) {
         throw DotenvException("unable to find key in uri: ${environmentVaultKey}")

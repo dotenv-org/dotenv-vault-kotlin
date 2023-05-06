@@ -9,11 +9,18 @@ import org.dotenv.vault.DotenvVault.Companion.loadVault
 class DotenvVault(val dotenv: DotenvVaultAdapter) : Dotenv {
     companion object {
         fun loadVault(key: String?, config: Configuration): Dotenv {
+            // fix: this code should be more intelligent. it should attempt to load using_vault only if it makes sense to:
+            // 1. .env.vault is present
+            // OR
+            // 2. DOTENV_KEY is present
+            // see logic inside of using_vault? method in ruby: https://github.com/dotenv-org/dotenv-vault-ruby/blob/master/lib/dotenv-vault.rb#L27
             try {
                 val loadedEnvFile = loadEncryptedVault(config)
                 val vaultAdapter = DotenvVaultAdapter(loadedEnvFile, key)
                 return DotenvVault(vaultAdapter)
             } catch (e: DotenvException) {
+                // fix: this should NOT print this information to the user if
+                // 1. a .env.vault does not exist AND a DOTENV_KEY is not set
                 println("unable to load encrypted vault file. trying with .env file.")
             }
             return loadUnencryptedEnvFile(config)
