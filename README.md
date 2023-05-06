@@ -112,7 +112,11 @@ android {
 
 ## 🚀 Deploying
 
-Install dotenv-vault. See [installation instructions](https://www.dotenv.org/install).
+[Install](https://www.dotenv.org/install) dotenv-vault.
+
+```
+See install instructions at https://www.dotenv.org/install
+```
 
 Then encrypt your environment variables by doing:
 
