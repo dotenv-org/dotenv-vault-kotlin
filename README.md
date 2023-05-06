@@ -10,7 +10,7 @@ The extended standard lets you load encrypted secrets from your `.env.vault` fil
 * [🏗️ Usage (.env)](#%EF%B8%8F-usage)
 * [🚀 Deploying (.env.vault) 🆕](#-deploying)
 * [🌴 Multiple Environments](#-manage-multiple-environments)
-* [ ✔ Examples](#-examples)
+* [📚 Examples](#-examples)
 * [❓ FAQ](#-faq)
 * [⏱️ Changelog](./CHANGELOG.md)
 
@@ -150,9 +150,10 @@ Set the production `DOTENV_KEY` enviorment variable with the value of your selec
 
 Your .env.vault fill be decrypted on boot, its production environment variables injected, and your app work as expected.
 
-## 🚀 Examples
+## 📚 Examples
+
 * [Android example app](https://github.com/marcel-rf/DotenvVaultAndroidExample)
-* Kotlin example app
+* [Kotlin example app](https://github.com/dotenv-org/hello-kotlin)
 * [Kotlin tests](https://github.com/dotenv-org/dotenv-vault-kotlin/blob/master/lib/src/test/kotlin/org/dotenv/vault/VaultTest.kt#L11)
 
 ## ❓ FAQ
