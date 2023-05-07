@@ -21,14 +21,14 @@ class DotenvVaultAdapter(private val unencryptedDotenv: Dotenv, private val key:
         decryptVolt()
     }
 
-    private fun getEnvironmentVaultKey(enviroment: String) = VAULT_KEY_PREFIX + enviroment.uppercase(Locale.getDefault())
+    private fun getEnvironmentVaultKey(environment: String) = VAULT_KEY_PREFIX + environment.uppercase(Locale.getDefault())
 
-    private fun decodeEncryptedEnvVaultContent(enviroment: String): String {
-        val environmentVaultKey = getEnvironmentVaultKey(enviroment)
+    private fun findEnvironmentVaultKey(environment: String): String {
+        val environmentVaultKey = getEnvironmentVaultKey(environment)
         val devEntry = unencryptedDotenv.entries().find { it.key == environmentVaultKey }
         devEntry?.let {
             val encryptedEnvContent = devEntry.value
-            println("using vault data in .env.vault for environment $enviroment = ${encryptedEnvContent.substring(0, 10)}...")
+            println("using vault data in .env.vault for environment $environment = ${encryptedEnvContent.substring(0, 10)}...")
             return encryptedEnvContent
         }
         throw DotenvException("could not find encrypted vault for key $environmentVaultKey")
@@ -39,7 +39,7 @@ class DotenvVaultAdapter(private val unencryptedDotenv: Dotenv, private val key:
         val foundEnvironmentVaultKey = key ?: findEnvironmentVaultKey()
         val dotenvVaultKey = decodeDotenvKeyFromUri(foundEnvironmentVaultKey)
 
-        val encryptedVaultContent = decodeEncryptedEnvVaultContent(dotenvVaultKey.environment)
+        val encryptedVaultContent = findEnvironmentVaultKey(dotenvVaultKey.environment)
 
         val dotenvFileContent = try {
             val secretKey = createKeyFromBytes(decodeKeyFromUri(dotenvVaultKey.decodeKey))
