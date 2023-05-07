@@ -10,7 +10,7 @@ class DotenvVault(val dotenv: DotenvVaultAdapter) : Dotenv {
     companion object {
         fun loadVault(key: String?, config: Configuration): Dotenv {
             try {
-                val loadedEnvFile = loadEncryptedVault(config)
+                val loadedEnvFile = initializeDotenvForFile(config)
                 val vaultAdapter = DotenvVaultAdapter(loadedEnvFile, key)
                 return DotenvVault(vaultAdapter)
             } catch (e: DotenvException) {
@@ -19,7 +19,7 @@ class DotenvVault(val dotenv: DotenvVaultAdapter) : Dotenv {
             return loadUnencryptedEnvFile(config)
         }
 
-        private fun loadEncryptedVault(config: Configuration): Dotenv {
+        private fun initializeDotenvForFile(config: Configuration): Dotenv {
             val filename = ".env.vault"
             return if (config.filename == ".env") { // when default filename is used (when it's omitted ) try to load .env.vault file
                 initializeDotenvForFile(filename, config.directory)
