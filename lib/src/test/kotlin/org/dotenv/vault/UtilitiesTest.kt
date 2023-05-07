@@ -9,6 +9,8 @@ import org.mockito.kotlin.mock
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
+private const val validAAAKey = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+
 class UtilitiesTest {
 
     @Test(expected = DotenvException::class)
@@ -30,24 +32,24 @@ class UtilitiesTest {
         val uriWithNoEnv = "dotenv://:key_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa@dotenv.local/vault/.env_test.vault?environment=development"
         val decodedUri = decodeDotenvKeyFromUri(uriWithNoEnv)
         println(decodedUri)
-        assertEquals("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", decodedUri.decodeKey)
+        assertEquals(validAAAKey, decodedUri.decodeKey)
     }
 
     @Test
     fun verifyUrlDecodingWithDifferentPasswordPrefixURI() {
-        //valid dotenv://:key_14968ef8b3f56cbcfcaa83197efa34dba567e715e82ee69e050258a5522100f6@dotenv.local/vault/.env_test.vault?environment=development
         val uriWithNoEnv = "dotenv://:local_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa@dotenv.local/vault/.env_test.vault?environment=development"
         val decodedUri = decodeDotenvKeyFromUri(uriWithNoEnv)
         println(decodedUri)
-        assertEquals("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", decodedUri.decodeKey)
+        assertEquals(validAAAKey, decodedUri.decodeKey)
+        assertEquals("development", decodedUri.environment)
     }
 
     @Test
-    fun verifyUrlDecodingWithShortPasswordURI() {
-        //valid dotenv://:key_14968ef8b3f56cbcfcaa83197efa34dba567e715e82ee69e050258a5522100f6@dotenv.local/vault/.env_test.vault?environment=development
+    fun verifyUrlDecodingPasswordAndEnvironmentURI() {
         val uriWithNoEnv = "dotenv://:key_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa@dotenv.local/vault/.env_test.vault?environment=development"
         val decodedUri = decodeDotenvKeyFromUri(uriWithNoEnv)
         println(decodedUri)
+        assertEquals(validAAAKey, decodedUri.decodeKey)
     }
 
     @Test(expected = DotenvException::class)
