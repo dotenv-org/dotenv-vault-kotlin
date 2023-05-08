@@ -11,7 +11,7 @@ import javax.crypto.BadPaddingException
 
 class DotenvVaultAdapter(private val unencryptedDotenv: Dotenv, private val key: String? = null): Dotenv {
     companion object {
-        val LOG: Logger = Logger.getLogger(this.javaClass.name)
+        val LOG: Logger = Logger.getLogger(this::class.java.simpleName)
 
         private const val VAULT_KEY_PREFIX = "DOTENV_VAULT_"
         private const val DOTENV_KEY_ID = "DOTENV_KEY"
@@ -48,7 +48,7 @@ class DotenvVaultAdapter(private val unencryptedDotenv: Dotenv, private val key:
             val secretKey = createKeyFromBytes(decodeKeyFromUri(dotenvVaultKey.decodeKey))
             decrypt(secretKey, Base64.getDecoder().decode(encryptedVaultContent))
         } catch (e: BadPaddingException) {
-            throw DotenvException("unable to decrypt vault. verify that your ${DOTENV_KEY_ID} environment variable is properly set")
+            throw DotenvException("unable to decrypt vault. verify that your $DOTENV_KEY_ID environment variable is properly set")
         }
 
 
@@ -64,7 +64,7 @@ class DotenvVaultAdapter(private val unencryptedDotenv: Dotenv, private val key:
         vaultDotEnvEntries = env + unencryptedDotenv.entries()
     }
 
-    fun findEnvironmentVaultKey(): String {
+    private fun findEnvironmentVaultKey(): String {
         val keyEntry = unencryptedDotenv.entries().find { it.key == DOTENV_KEY_ID }
         if (keyEntry?.value != null) {
             return keyEntry.value

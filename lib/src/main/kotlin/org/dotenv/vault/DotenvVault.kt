@@ -9,7 +9,7 @@ import java.util.logging.Logger
 
 class DotenvVault(val dotenv: DotenvVaultAdapter) : Dotenv {
     companion object {
-        val LOG: Logger = Logger.getLogger(this.javaClass.name)
+        private val LOG: Logger = Logger.getLogger(this::class.java.simpleName)
 
         fun loadVault(key: String?, config: Configuration): Dotenv {
             try {
@@ -49,8 +49,7 @@ class DotenvVault(val dotenv: DotenvVaultAdapter) : Dotenv {
                 .configure()
                 .directory(directory)
                 .filename(filename)
-            val delegate = dotenv.load()
-            return delegate
+            return dotenv.load()
         }
     }
 
