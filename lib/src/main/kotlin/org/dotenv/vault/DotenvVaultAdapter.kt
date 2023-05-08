@@ -5,11 +5,14 @@ import io.github.cdimascio.dotenv.internal.DotenvParser
 import org.dotenv.vault.utilities.decodeDotenvKeyFromUri
 import org.dotenv.vault.utilities.decodeKeyFromUri
 import java.util.*
+import java.util.logging.Logger
 import javax.crypto.BadPaddingException
 
 
 class DotenvVaultAdapter(private val unencryptedDotenv: Dotenv, private val key: String? = null): Dotenv {
     companion object {
+        val LOG: Logger = Logger.getLogger(this.javaClass.name)
+
         private const val VAULT_KEY_PREFIX = "DOTENV_VAULT_"
         private const val DOTENV_KEY_ID = "DOTENV_KEY"
     }
@@ -28,7 +31,7 @@ class DotenvVaultAdapter(private val unencryptedDotenv: Dotenv, private val key:
         val devEntry = unencryptedDotenv.entries().find { it.key == environmentVaultKey }
         devEntry?.let {
             val encryptedEnvContent = devEntry.value
-            println("using vault data in .env.vault for environment $environment = ${encryptedEnvContent.substring(0, 10)}...")
+            LOG.fine("using vault data in .env.vault for environment $environment = ${encryptedEnvContent.substring(0, 10)}...")
             return encryptedEnvContent
         }
         throw DotenvException("could not find encrypted vault for key $environmentVaultKey")
