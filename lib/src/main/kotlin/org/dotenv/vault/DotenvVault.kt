@@ -5,26 +5,29 @@ import io.github.cdimascio.dotenv.Dotenv
 import io.github.cdimascio.dotenv.DotenvEntry
 import io.github.cdimascio.dotenv.DotenvException
 import org.dotenv.vault.DotenvVault.Companion.loadVault
+import java.util.logging.Logger
 
 class DotenvVault(val dotenv: DotenvVaultAdapter) : Dotenv {
     companion object {
+        private val LOG: Logger = Logger.getLogger(this::class.java.simpleName)
+
         fun loadVault(key: String?, config: Configuration): Dotenv {
             try {
-                val loadedEnvFile = loadEncryptedVault(config)
+                val loadedEnvFile = initializeDotenvWithConfig(config)
                 val vaultAdapter = DotenvVaultAdapter(loadedEnvFile, key)
                 return DotenvVault(vaultAdapter)
             } catch (e: DotenvException) {
-                println("unable to load encrypted vault file. trying with .env file.")
+                LOG.fine("unable to load encrypted vault file. trying with .env file.")
             }
             return loadUnencryptedEnvFile(config)
         }
 
-        private fun loadEncryptedVault(config: Configuration): Dotenv {
+        private fun initializeDotenvWithConfig(config: Configuration): Dotenv {
             val filename = ".env.vault"
             return if (config.filename == ".env") { // when default filename is used (when it's omitted ) try to load .env.vault file
-                initializeDotenvForFile(filename, config.directory)
+                initializeDotenvWithConfig(filename, config.directory)
             } else {
-                initializeDotenvForFile(config.filename, config.directory)
+                initializeDotenvWithConfig(config.filename, config.directory)
             }
         }
 
@@ -41,13 +44,12 @@ class DotenvVault(val dotenv: DotenvVaultAdapter) : Dotenv {
         }
 
 
-        private fun initializeDotenvForFile(filename: String, directory: String): Dotenv {
+        private fun initializeDotenvWithConfig(filename: String, directory: String): Dotenv {
             val dotenv = Dotenv
                 .configure()
                 .directory(directory)
                 .filename(filename)
-            val delegate = dotenv.load()
-            return delegate
+            return dotenv.load()
         }
     }
 

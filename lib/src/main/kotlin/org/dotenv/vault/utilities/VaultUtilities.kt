@@ -16,9 +16,9 @@ fun decodeDotenvKeyFromUri(environmentVaultKey: String): DotenvKey {
             ?: throw DotenvException("unable to determine environment from key uri")
 
         val password = uri.findPasswordValue() ?: throw DotenvException("unable to find key in userinfo")
-        return DotenvKey(environmentValue, password.removePrefix("key_"))
+        return DotenvKey(environmentValue, password.takeLast(64))
     } catch (e: Exception) {
-        throw DotenvException("unable to find key in uri: ${environmentVaultKey}")
+        throw DotenvException("unable to find key in uri: $environmentVaultKey")
     }
 }
 

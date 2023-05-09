@@ -7,6 +7,9 @@ import org.dotenv.vault.utilities.printEntries
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import kotlin.test.Test
+import kotlin.test.assertEquals
+
+private const val validAAAKey = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
 
 class UtilitiesTest {
 
@@ -22,6 +25,31 @@ class UtilitiesTest {
         val uriWithNoEnv = "dotenv://:key_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa@dotenv.local/vault/.env.vault?test=test"
         val decodedUri = decodeDotenvKeyFromUri(uriWithNoEnv)
         println(decodedUri)
+    }
+
+    @Test
+    fun verifyUrlDecodingWithValidPasswordURI() {
+        val uriWithNoEnv = "dotenv://:key_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa@dotenv.local/vault/.env_test.vault?environment=development"
+        val decodedUri = decodeDotenvKeyFromUri(uriWithNoEnv)
+        println(decodedUri)
+        assertEquals(validAAAKey, decodedUri.decodeKey)
+    }
+
+    @Test
+    fun verifyUrlDecodingWithDifferentPasswordPrefixURI() {
+        val uriWithNoEnv = "dotenv://:local_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa@dotenv.local/vault/.env_test.vault?environment=development"
+        val decodedUri = decodeDotenvKeyFromUri(uriWithNoEnv)
+        println(decodedUri)
+        assertEquals(validAAAKey, decodedUri.decodeKey)
+        assertEquals("development", decodedUri.environment)
+    }
+
+    @Test
+    fun verifyUrlDecodingPasswordAndEnvironmentURI() {
+        val uriWithNoEnv = "dotenv://:key_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa@dotenv.local/vault/.env_test.vault?environment=development"
+        val decodedUri = decodeDotenvKeyFromUri(uriWithNoEnv)
+        println(decodedUri)
+        assertEquals(validAAAKey, decodedUri.decodeKey)
     }
 
     @Test(expected = DotenvException::class)
